@@ -4,6 +4,7 @@ import QuestionCard from "./components/QuestionCard";
 import { getQuiz } from "./components/API";
 import { Difficulty } from "./components/API";
 import { QuestionState } from "./components/API";
+import { GlobalStyle } from "./App.styles";
 
 export type AnswerObject = {
   text: string;
@@ -38,17 +39,48 @@ function App() {
     }
   };
 
-  const checkAnswers = (e: React.MouseEvent<HTMLButtonElement>) => {};
+  const checkAnswers = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!gameOver) {
+      //this is user answer
+      const answer = event.currentTarget.value;
 
-  const nextQuestion = () => {};
+      //check if user answer is correct
+      const correct = questions[number].correctAnswer === answer;
+
+      if (correct) setScore((prev) => prev + 1);
+
+      //save answers in the array for user answers
+      const answerObject: any = {
+        question: questions[number].question.text,
+        answer,
+        correct,
+        correctAnswer: questions[number].correctAnswer,
+      };
+
+      setUserAnswers((prev) => [...prev, answerObject]);
+    }
+  };
+
+  const nextQuestion = () => {
+    //if not the last question, then next
+    const next: any = number + 1;
+    if (next === TOTAL_QUESTIONS) {
+      setGameOver(true);
+    } else {
+      setNumber(next);
+    }
+  };
   return (
     <MainContainer className="App">
+      <GlobalStyle />
       <HeaderText>Quiz</HeaderText>
       {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
-        <Button onClick={startApiCalls}>Start Quiz</Button>
+        <Button onClick={startApiCalls} className="start">
+          Start Quiz
+        </Button>
       ) : null}
 
-      {!gameOver ? <Paragraph>Score:</Paragraph> : null}
+      {!gameOver ? <Paragraph>Score: {score}</Paragraph> : null}
       {loading && <Paragraph>Loading Questions....</Paragraph>}
       {!loading && !gameOver && (
         <QuestionCard
@@ -60,13 +92,35 @@ function App() {
           callback={checkAnswers}
         />
       )}
-      <Button onClick={nextQuestion}>Next</Button>
+      {!gameOver &&
+      !loading &&
+      userAnswers.length === number + 1 &&
+      number !== TOTAL_QUESTIONS - 1 ? (
+        <Button className="next" onClick={nextQuestion}>
+          Next
+        </Button>
+      ) : null}
     </MainContainer>
   );
 }
 
 export default App;
-const MainContainer = styled.div``;
-const HeaderText = styled.h1``;
-const Button = styled.button``;
-const Paragraph = styled.p``;
+const MainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const HeaderText = styled.h1`
+  color: #e9eff1;
+`;
+const Button = styled.button`
+  background-color: ${(props) =>
+    props.className === "next" ? "#F09512" : "#7f9c9c"};
+  border-radius: 25px;
+  padding: 10px 10px;
+  width: ${(props) => (props.className === "start" ? "100%" : "30%")};
+  cursor: pointer;
+`;
+const Paragraph = styled.p`
+  color: #ffffff;
+`;
