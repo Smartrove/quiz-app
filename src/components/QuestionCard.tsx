@@ -66,6 +66,7 @@ const MainContainer = styled.div`
   border-radius: 15px;
   padding: 40px 20px;
   width: 100%;
+  background-color: #fff;
 `;
 const Paragraph = styled.p`
   color: #fc9708;

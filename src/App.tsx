@@ -22,6 +22,7 @@ function App() {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(true);
 
+  const questionNumber = 10;
   // console.log(questions);
   const startApiCalls = async () => {
     setLoading(true);
@@ -74,13 +75,19 @@ function App() {
     <MainContainer className="App">
       <GlobalStyle />
       <HeaderText>Quiz</HeaderText>
+
       {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
         <Button onClick={startApiCalls} className="start">
           Start Quiz
         </Button>
       ) : null}
-
-      {!gameOver ? <Paragraph>Score: {score}</Paragraph> : null}
+      {!gameOver ? (
+        <Paragraph>Your Score: {score}</Paragraph>
+      ) : gameOver && score >= 5 ? (
+        <Paragraph>
+          Your score is {score}/{questionNumber}
+        </Paragraph>
+      ) : null}
       {loading && <Paragraph>Loading Questions....</Paragraph>}
       {!loading && !gameOver && (
         <QuestionCard
